@@ -1,0 +1,26 @@
+language: julia
+julia:
+  - 0.6
+addons:
+  apt:
+    packages:
+    - libav-tools  # ffmpeg
+before_install:
+  # Update Julia packages metadata.
+  - julia -e 'Pkg.update()'
+  # Use PyPlot's Automated Matplotlib installation through Conda.
+  # Work around (part 1/2) matplotlib backend error leading to "matplotlib.pyplot could not be found by pyimport": can't just set env PYTHON="".
+  - julia -e 'ENV["PYTHON"]=""; Pkg.add("Conda"); using Conda; Conda.update(); Conda.add("matplotlib"); Pkg.add("PyCall"); Pkg.build("PyCall"); Pkg.add("PyPlot");'
+matrix:
+  include:
+    - os: linux
+      sudo: required  # Gtk needs to apt-get install
+      before_script:  # Using xvfb to run tests that require a GUI
+        - "export DISPLAY=:99.0"
+        - "sh -e /etc/init.d/xvfb start"
+        - sleep 3 # Give xvfb some time to start
+    - os: osx
+script:
+  - ping -c 3 8.8.8.8
+  # Work around (part 2/2) matplotlib backend error leading to "matplotlib.pyplot could not be found by pyimport": point LD_LIBRARY_PATH to Conda libs.
+  - export LD_LIBRARY_PATH=$HOME/.julia/v0.6/Conda/deps/usr/lib; julia --check-bounds=yes  save.jl
