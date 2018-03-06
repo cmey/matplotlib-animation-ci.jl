@@ -24,7 +24,8 @@ function saveall(output_path=".")
     # b) matplotlib is built with ffmpeg support enabled
     ani = anim.ArtistAnimation(fig, ims, interval=30, blit=true, repeat=false)
     anim_filename = wave_propagation_filename
-    ani[:save](joinpath(output_path, anim_filename))
+    mywriter = anim.FFMpegWriter()
+    ani[:save](joinpath(output_path, anim_filename), mywriter)
 end
 
 saveall()
