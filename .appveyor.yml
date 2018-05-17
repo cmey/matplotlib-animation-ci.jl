@@ -5,9 +5,9 @@ environment:
     CONDA_JL_VERSION: "3"
 
 install:
+  - ps: "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12"
   # Install imagemagick to get ffmpeg tool.
   - choco install --timeout 600 -y imagemagick.tool
-  - ps: "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12"
   # Download most recent Julia Windows binary
   - ps: (new-object net.webclient).DownloadFile(
         $env:JULIA_URL,
